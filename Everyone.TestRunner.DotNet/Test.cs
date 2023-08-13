@@ -267,5 +267,70 @@ namespace Everyone
         {
             this.AssertThrows(expected, action, parameters);
         }
+
+        public void AssertGreaterThan<T,U>(T? value, U? lowerBound, string? message = null)
+        {
+            this.AssertGreaterThan(value, lowerBound, new AssertParameters { Message = message });
+        }
+
+        public void AssertGreaterThan<T,U>(T? value, U? lowerBound, AssertParameters? parameters)
+        {
+            if (!this.GetCompareFunctions(parameters)
+                     .IsGreaterThan(
+                        lhs: value,
+                        rhs: lowerBound))
+            {
+                throw new TestFailureException(
+                    this.GetAssertMessageFunctions(parameters)
+                        .ExpectedGreaterThan(
+                            value: value,
+                            lowerBound: lowerBound,
+                            parameters: parameters));
+            }
+        }
+
+        public void AssertGreaterThanOrEqualTo<T, U>(T? value, U? lowerBound, string? message = null)
+        {
+            this.AssertGreaterThanOrEqualTo(value, lowerBound, new AssertParameters { Message = message });
+        }
+
+        public void AssertGreaterThanOrEqualTo<T, U>(T? value, U? lowerBound, AssertParameters? parameters)
+        {
+            if (!this.GetCompareFunctions(parameters)
+                     .IsGreaterThanOrEqualTo(
+                        lhs: value,
+                        rhs: lowerBound))
+            {
+                throw new TestFailureException(
+                    this.GetAssertMessageFunctions(parameters)
+                        .ExpectedGreaterThanOrEqualTo(
+                            value: value,
+                            lowerBound: lowerBound,
+                            parameters: parameters));
+            }
+        }
+
+        public void AssertBetween<T,U,V>(T? lowerBound, U? value, V? upperBound, string? message = null)
+        {
+            this.AssertBetween(lowerBound, value, upperBound, new AssertParameters { Message = message });
+        }
+
+        public void AssertBetween<T,U,V>(T? lowerBound, U? value, V? upperBound, AssertParameters? parameters)
+        {
+            if (!this.GetCompareFunctions(parameters)
+                     .IsBetween(
+                        lowerBound: lowerBound,
+                        value: value,
+                        upperBound: upperBound))
+            {
+                throw new TestFailureException(
+                    this.GetAssertMessageFunctions(parameters)
+                        .ExpectedBetween(
+                            lowerBound: lowerBound,
+                            value: value,
+                            upperBound: upperBound,
+                            parameters: parameters));
+            }
+        }
     }
 }

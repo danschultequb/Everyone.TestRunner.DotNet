@@ -12,7 +12,7 @@ namespace Everyone
             {
                 runner.TestGroup("Create(string,TestGroup?,CompareFunctions,AssertMessageFunctions)", () =>
                 {
-                    void ConstructorErrorTest(string? name, TestGroup? parent, CompareFunctions? compareFunctions, AssertMessageFunctions? messageFunctions, Exception expected)
+                    void CreateErrorTest(string? name, TestGroup? parent, CompareFunctions? compareFunctions, AssertMessageFunctions? messageFunctions, Exception expected)
                     {
                         runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), compareFunctions, messageFunctions }.Select(runner.ToString))}", (Test test) =>
                         {
@@ -21,20 +21,24 @@ namespace Everyone
                         });
                     };
 
-                    ConstructorErrorTest(null, null, null, null,
-                        new PreConditionFailure("Expression: name",
+                    CreateErrorTest(null, null, null, null,
+                        new PreConditionFailure(
+                            "Expression: name",
                             "Expected: not null and not empty",
                             "Actual:   null"));
-                    ConstructorErrorTest("", null, null, null,
-                        new PreConditionFailure("Expression: name",
+                    CreateErrorTest("", null, null, null,
+                        new PreConditionFailure(
+                            "Expression: name",
                             "Expected: not null and not empty",
                             "Actual:   \"\""));
-                    ConstructorErrorTest("abc", null, null, null,
-                        new PreConditionFailure("Expression: compareFunctions",
+                    CreateErrorTest("abc", null, null, null,
+                        new PreConditionFailure(
+                            "Expression: compareFunctions",
                             "Expected: not null",
                             "Actual:       null"));
-                    ConstructorErrorTest("abc", null, CompareFunctions.Create(), null,
-                        new PreConditionFailure("Expression: assertMessageFunctions",
+                    CreateErrorTest("abc", null, CompareFunctions.Create(), null,
+                        new PreConditionFailure(
+                            "Expression: assertMessageFunctions",
                             "Expected: not null",
                             "Actual:       null"));
 
@@ -488,6 +492,238 @@ namespace Everyone
                     {
                         test.AssertThrows(new Exception("abc"), () => { throw new Exception("abc"); });
                     });
+                });
+
+                runner.TestGroup("AssertGreaterThan<T,U>(T?,U?,string?)", () =>
+                {
+                    void AssertGreaterThanTest<T, U>(T? value, U? lowerBound, string? expression = null, Exception? expectedException = null)
+                    {
+                        runner.Test($"with {Language.AndList(new object?[] { value, lowerBound, expression }.Map(runner.ToString))}", (Test test) =>
+                        {
+                            Test t = CreateTest("fake-test");
+                            if (expectedException == null)
+                            {
+                                t.AssertGreaterThan(value, lowerBound, expression);
+                            }
+                            else
+                            {
+                                test.AssertThrows(expectedException, () =>
+                                {
+                                    t.AssertGreaterThan(value, lowerBound, expression);
+                                });
+                            }
+                        });
+                    }
+
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 0);
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 0,
+                        expression: "hello");
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 1,
+                        expectedException: new TestFailureException(
+                            "Expected: greater than 1",
+                            "Actual:                1"));
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 1,
+                        expression: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: greater than 1",
+                            "Actual:                1"));
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 2,
+                        expectedException: new TestFailureException(
+                            "Expected: greater than 2",
+                            "Actual:                1"));
+                    AssertGreaterThanTest(
+                        value: 1,
+                        lowerBound: 2,
+                        expression: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: greater than 2",
+                            "Actual:                1"));
+                });
+
+                runner.TestGroup("AssertGreaterThanOrEqualTo<T,U>(T?,U?,string?)", () =>
+                {
+                    void AssertGreaterThanOrEqualToTest<T, U>(T? value, U? lowerBound, string? expression = null, Exception? expectedException = null)
+                    {
+                        runner.Test($"with {Language.AndList(new object?[] { value, lowerBound, expression }.Map(runner.ToString))}", (Test test) =>
+                        {
+                            Test t = CreateTest("fake-test");
+                            if (expectedException == null)
+                            {
+                                t.AssertGreaterThanOrEqualTo(value, lowerBound, expression);
+                            }
+                            else
+                            {
+                                test.AssertThrows(expectedException, () =>
+                                {
+                                    t.AssertGreaterThanOrEqualTo(value, lowerBound, expression);
+                                });
+                            }
+                        });
+                    }
+
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 0);
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 0,
+                        expression: "hello");
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 1);
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 1,
+                        expression: "hello");
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 2,
+                        expectedException: new TestFailureException(
+                            "Expected: greater than or equal to 2",
+                            "Actual:                            1"));
+                    AssertGreaterThanOrEqualToTest(
+                        value: 1,
+                        lowerBound: 2,
+                        expression: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: greater than or equal to 2",
+                            "Actual:                            1"));
+                });
+
+                runner.TestGroup("AssertBetween<T,U,V>(T?,U?,V?,string?)", () =>
+                {
+                    void AssertBetweenTest<T, U, V>(T? lowerBound, U? value, V? upperBound, string? message = null, Exception? expectedException = null)
+                    {
+                        runner.Test($"with {Language.AndList(new object?[] { lowerBound, value, upperBound, message }.Map(runner.ToString))}", (Test test) =>
+                        {
+                            Test t = CreateTest("fake-test");
+                            if (expectedException == null)
+                            {
+                                t.AssertBetween(
+                                    lowerBound: lowerBound,
+                                    value: value,
+                                    upperBound: upperBound,
+                                    message: message);
+                            }
+                            else
+                            {
+                                test.AssertThrows(expectedException, () =>
+                                {
+                                    t.AssertBetween(
+                                        lowerBound: lowerBound,
+                                        value: value,
+                                        upperBound: upperBound,
+                                        message: message);
+                                });
+                            }
+                        });
+                    }
+
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 2,
+                        upperBound: 3);
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 2,
+                        upperBound: 3,
+                        message: "hello");
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 0,
+                        upperBound: 3,
+                        expectedException: new TestFailureException(
+                            "Expected: between 1 and 3",
+                            "Actual:           0"));
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 0,
+                        upperBound: 3,
+                        message: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: between 1 and 3",
+                            "Actual:           0"));
+
+                    AssertBetweenTest(
+                        lowerBound: '1',
+                        value: '2',
+                        upperBound: '3');
+                    AssertBetweenTest(
+                        lowerBound: '1',
+                        value: '2',
+                        upperBound: '3',
+                        message: "hello");
+                    AssertBetweenTest(
+                        lowerBound: '1',
+                        value: '0',
+                        upperBound: '3',
+                        expectedException: new TestFailureException(
+                            "Expected: between '1' and '3'",
+                            "Actual:           '0'"));
+                    AssertBetweenTest(
+                        lowerBound: '1',
+                        value: '0',
+                        upperBound: '3',
+                        message: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: between '1' and '3'",
+                            "Actual:           '0'"));
+
+                    AssertBetweenTest(
+                        lowerBound: "no compare function",
+                        value: false,
+                        upperBound: 40,
+                        expectedException: new InvalidOperationException("No compare function found that matches the types System.String and System.Boolean."));
+                    AssertBetweenTest(
+                        lowerBound: "no compare function",
+                        value: false,
+                        upperBound: 40,
+                        message: "hello",
+                        expectedException: new InvalidOperationException("No compare function found that matches the types System.String and System.Boolean."));
+
+                    AssertBetweenTest(
+                        lowerBound: "no compare",
+                        value: "function",
+                        upperBound: 40,
+                        expectedException: new TestFailureException(
+                            "Expected: between \"no compare\" and 40",
+                            "Actual:           \"function\""));
+                    AssertBetweenTest(
+                        lowerBound: "no compare",
+                        value: "function",
+                        upperBound: 40,
+                        message: "hello",
+                        expectedException: new TestFailureException(
+                            "Message: hello",
+                            "Expected: between \"no compare\" and 40",
+                            "Actual:           \"function\""));
+
+                    AssertBetweenTest(
+                        lowerBound: "no compare",
+                        value: "oops",
+                        upperBound: 40,
+                        expectedException: new InvalidOperationException("No compare function found that matches the types System.String and System.Int32."));
+                    AssertBetweenTest(
+                        lowerBound: "no compare",
+                        value: "oops",
+                        upperBound: 40,
+                        message: "hello",
+                        expectedException: new InvalidOperationException("No compare function found that matches the types System.String and System.Int32."));
                 });
             });
         }
