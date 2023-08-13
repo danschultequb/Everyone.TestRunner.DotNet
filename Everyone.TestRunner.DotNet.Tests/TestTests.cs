@@ -462,7 +462,66 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("AssertThrows(Exception,Action)", () =>
+                runner.TestGroup("CatchException(Action)", () =>
+                {
+                    void CatchExceptionTest(string testName, Action action, Exception? expected = null)
+                    {
+                        runner.Test(testName, (Test test) =>
+                        {
+                            Exception? caught = test.CatchException(action);
+                            test.AssertEqual(expected, caught);
+                        });
+                    }
+
+                    CatchExceptionTest(
+                        testName: "with no thrown exception",
+                        action: () => { });
+                    CatchExceptionTest(
+                        testName: "with thrown exception",
+                        action: () => { throw new ArgumentException("blah"); },
+                        expected: new ArgumentException("blah"));
+                });
+
+                runner.TestGroup("Catch<T>(Action)", () =>
+                {
+                    void CatchTest<T>(string testName, Action action, Exception? expected = null, Exception? unexpectedException = null) where T : Exception
+                    {
+                        runner.Test(testName, (Test test) =>
+                        {
+                            if (unexpectedException == null)
+                            {
+                                T? caught = test.Catch<T>(action);
+                                test.AssertEqual(expected, caught);
+                            }
+                            else
+                            {
+                                test.AssertThrows(unexpectedException, () => test.Catch<T>(action));
+                            }
+                        });
+                    }
+
+                    CatchTest<ArgumentException>(
+                        testName: "with no thrown exception",
+                        action: () => { });
+                    CatchTest<ArgumentException>(
+                        testName: "with exception of same type thrown",
+                        action: () => { throw new ArgumentException("blah"); },
+                        expected: new ArgumentException("blah"));
+                    CatchTest<Exception>(
+                        testName: "with exception of derived type thrown",
+                        action: () => { throw new ArgumentException("blah"); },
+                        expected: new ArgumentException("blah"));
+                    CatchTest<ArgumentException>(
+                        testName: "with exception of base type thrown",
+                        action: () => { throw new Exception("blah"); },
+                        unexpectedException: new Exception("blah"));
+                    CatchTest<ArgumentException>(
+                        testName: "with unrelated exception thrown",
+                        action: () => { throw new InvalidOperationException("blah"); },
+                        unexpectedException: new InvalidOperationException("blah"));
+                });
+
+                runner.TestGroup("AssertThrows(Exception?,Action)", () =>
                 {
                     runner.Test("with no exception thrown", (Test test) =>
                     {

@@ -238,32 +238,59 @@ namespace Everyone
             }
         }
 
-        public void AssertThrows(Exception expected, Action action, string? message = null)
+        /// <summary>
+        /// Invoke the provided <see cref="Action"/> and catch and return an
+        /// <see cref="Exception"/> if it is thrown. If no <see cref="Exception"/> is thrown, then
+        /// null will be returned.
+        /// </summary>
+        /// <param name="action">The <see cref="Action"/> to run.</param>
+        public Exception? CatchException(Action action)
         {
-            this.AssertThrows(expected, action, new AssertParameters { Message = message });
+            return this.Catch<Exception>(action);
         }
 
-        public void AssertThrows(Exception expected, Action action, AssertParameters? parameters)
+        /// <summary>
+        /// Invoke the provided <see cref="Action"/> and catch and return an
+        /// <see cref="Exception"/> of type <typeparamref name="T"/> if it is thrown. If no
+        /// <see cref="Exception"/> is thrown, then null will be returned. If an
+        /// <see cref="Exception"/> of a type different than <typeparamref name="T"/> is thrown, it
+        /// will not be caught and regular exception handling will occur.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="Exception"/> to catch and return.</typeparam>
+        /// <param name="action">The <see cref="Action"/> to run.</param>
+        public T? Catch<T>(Action action) where T : Exception
         {
-            Exception? actual = null;
+            PreCondition.AssertNotNull(action, nameof(action));
+
+            T? result = null;
             try
             {
                 action.Invoke();
             }
-            catch (Exception e)
+            catch (T exception)
             {
-                actual = e;
+                result = exception;
             }
+            return result;
+        }
 
+        public void AssertThrows(Exception? expected, Action action, string? message = null)
+        {
+            this.AssertThrows(expected, action, new AssertParameters { Message = message });
+        }
+
+        public void AssertThrows(Exception? expected, Action action, AssertParameters? parameters)
+        {
+            Exception? actual = this.CatchException(action);
             this.AssertEqual(expected, actual, parameters);
         }
 
-        public void AssertThrows(Action action, Exception expected, string? message = null)
+        public void AssertThrows(Action action, Exception? expected, string? message = null)
         {
             this.AssertThrows(action, expected, new AssertParameters { Message = message });
         }
 
-        public void AssertThrows(Action action, Exception expected, AssertParameters? parameters)
+        public void AssertThrows(Action action, Exception? expected, AssertParameters? parameters)
         {
             this.AssertThrows(expected, action, parameters);
         }
