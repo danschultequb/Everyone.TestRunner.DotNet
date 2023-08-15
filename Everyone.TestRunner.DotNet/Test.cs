@@ -240,17 +240,6 @@ namespace Everyone
 
         /// <summary>
         /// Invoke the provided <see cref="Action"/> and catch and return an
-        /// <see cref="Exception"/> if it is thrown. If no <see cref="Exception"/> is thrown, then
-        /// null will be returned.
-        /// </summary>
-        /// <param name="action">The <see cref="Action"/> to run.</param>
-        public Exception? CatchException(Action action)
-        {
-            return this.Catch<Exception>(action);
-        }
-
-        /// <summary>
-        /// Invoke the provided <see cref="Action"/> and catch and return an
         /// <see cref="Exception"/> of type <typeparamref name="T"/> if it is thrown. If no
         /// <see cref="Exception"/> is thrown, then null will be returned. If an
         /// <see cref="Exception"/> of a type different than <typeparamref name="T"/> is thrown, it
@@ -274,22 +263,60 @@ namespace Everyone
             return result;
         }
 
+        /// <summary>
+        /// Assert that the provided <see cref="Action"/> will throw the provided
+        /// <paramref name="expected"/> <see cref="Exception"/>. If <paramref name="expected"/> is
+        /// null, then this will assert that the provided <see cref="Action"/> does not thrown an
+        /// <see cref="Exception"/>.
+        /// </summary>
+        /// <param name="expected">The expected <see cref="Exception"/>.</param>
+        /// <param name="action">The <see cref="Action"/> to invoke.</param>
+        /// <param name="message">A message that describes the failure.</param>
         public void AssertThrows(Exception? expected, Action action, string? message = null)
         {
             this.AssertThrows(expected, action, new AssertParameters { Message = message });
         }
 
+        /// <summary>
+        /// Assert that the provided <see cref="Action"/> will throw the provided
+        /// <paramref name="expected"/> <see cref="Exception"/>. If <paramref name="expected"/> is
+        /// null, then this will assert that the provided <see cref="Action"/> does not thrown an
+        /// <see cref="Exception"/>.
+        /// </summary>
+        /// <param name="expected">The expected <see cref="Exception"/>.</param>
+        /// <param name="action">The <see cref="Action"/> to invoke.</param>
+        /// <param name="parameters"><see cref="AssertParameters"/> that are used to define the
+        /// assertion.</param>
         public void AssertThrows(Exception? expected, Action action, AssertParameters? parameters)
         {
-            Exception? actual = this.CatchException(action);
+            Exception? actual = this.Catch<Exception>(action);
             this.AssertEqual(expected, actual, parameters);
         }
 
+        /// <summary>
+        /// Assert that the provided <see cref="Action"/> will throw the provided
+        /// <paramref name="expected"/> <see cref="Exception"/>. If <paramref name="expected"/> is
+        /// null, then this will assert that the provided <see cref="Action"/> does not thrown an
+        /// <see cref="Exception"/>.
+        /// </summary>
+        /// <param name="action">The <see cref="Action"/> to invoke.</param>
+        /// <param name="expected">The expected <see cref="Exception"/>.</param>
+        /// <param name="message">A message that describes the failure.</param>
         public void AssertThrows(Action action, Exception? expected, string? message = null)
         {
             this.AssertThrows(action, expected, new AssertParameters { Message = message });
         }
 
+        /// <summary>
+        /// Assert that the provided <see cref="Action"/> will throw the provided
+        /// <paramref name="expected"/> <see cref="Exception"/>. If <paramref name="expected"/> is
+        /// null, then this will assert that the provided <see cref="Action"/> does not thrown an
+        /// <see cref="Exception"/>.
+        /// </summary>
+        /// <param name="action">The <see cref="Action"/> to invoke.</param>
+        /// <param name="expected">The expected <see cref="Exception"/>.</param>
+        /// <param name="parameters"><see cref="AssertParameters"/> that are used to define the
+        /// assertion.</param>
         public void AssertThrows(Action action, Exception? expected, AssertParameters? parameters)
         {
             this.AssertThrows(expected, action, parameters);
@@ -344,19 +371,21 @@ namespace Everyone
 
         public void AssertBetween<T,U,V>(T? lowerBound, U? value, V? upperBound, AssertParameters? parameters)
         {
-            if (!this.GetCompareFunctions(parameters)
-                     .IsBetween(
+            CompareFunctions compareFunctions = this.GetCompareFunctions(parameters);
+            if (!compareFunctions.IsBetween(lowerBound: lowerBound, value: value, upperBound: upperBound))
+            {
+                AssertMessageFunctions messageFunctions = this.GetAssertMessageFunctions(parameters);
+                throw new TestFailureException(
+                    compareFunctions.AreEqual(lowerBound, upperBound)
+                    ? messageFunctions.ExpectedEqual(
+                        expected: lowerBound,
+                        actual: value,
+                        parameters: parameters)
+                    : messageFunctions.ExpectedBetween(
                         lowerBound: lowerBound,
                         value: value,
-                        upperBound: upperBound))
-            {
-                throw new TestFailureException(
-                    this.GetAssertMessageFunctions(parameters)
-                        .ExpectedBetween(
-                            lowerBound: lowerBound,
-                            value: value,
-                            upperBound: upperBound,
-                            parameters: parameters));
+                        upperBound: upperBound,
+                        parameters: parameters));
             }
         }
     }

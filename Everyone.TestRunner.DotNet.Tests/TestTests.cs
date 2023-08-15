@@ -462,26 +462,6 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("CatchException(Action)", () =>
-                {
-                    void CatchExceptionTest(string testName, Action action, Exception? expected = null)
-                    {
-                        runner.Test(testName, (Test test) =>
-                        {
-                            Exception? caught = test.CatchException(action);
-                            test.AssertEqual(expected, caught);
-                        });
-                    }
-
-                    CatchExceptionTest(
-                        testName: "with no thrown exception",
-                        action: () => { });
-                    CatchExceptionTest(
-                        testName: "with thrown exception",
-                        action: () => { throw new ArgumentException("blah"); },
-                        expected: new ArgumentException("blah"));
-                });
-
                 runner.TestGroup("Catch<T>(Action)", () =>
                 {
                     void CatchTest<T>(string testName, Action action, Exception? expected = null, Exception? unexpectedException = null) where T : Exception
@@ -523,6 +503,11 @@ namespace Everyone
 
                 runner.TestGroup("AssertThrows(Exception?,Action)", () =>
                 {
+                    runner.Test("with no exception thrown and null expected exception", (Test test) =>
+                    {
+                        test.AssertThrows(null, () => { });
+                    });
+
                     runner.Test("with no exception thrown", (Test test) =>
                     {
                         test.AssertThrows(new TestFailureException("Expected: System.Exception: \"abc\"", "Actual:   null"), () =>
@@ -668,29 +653,36 @@ namespace Everyone
                     {
                         runner.Test($"with {Language.AndList(new object?[] { lowerBound, value, upperBound, message }.Map(runner.ToString))}", (Test test) =>
                         {
-                            Test t = CreateTest("fake-test");
-                            if (expectedException == null)
+                            test.AssertThrows(expectedException, () =>
                             {
+                                Test t = CreateTest("fake-test");
                                 t.AssertBetween(
                                     lowerBound: lowerBound,
                                     value: value,
                                     upperBound: upperBound,
                                     message: message);
-                            }
-                            else
-                            {
-                                test.AssertThrows(expectedException, () =>
-                                {
-                                    t.AssertBetween(
-                                        lowerBound: lowerBound,
-                                        value: value,
-                                        upperBound: upperBound,
-                                        message: message);
-                                });
-                            }
+                            });
                         });
                     }
 
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 0,
+                        upperBound: 1,
+                        expectedException: new TestFailureException(
+                            "Expected: 1",
+                            "Actual:   0"));
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 1,
+                        upperBound: 1);
+                    AssertBetweenTest(
+                        lowerBound: 1,
+                        value: 2,
+                        upperBound: 1,
+                        expectedException: new TestFailureException(
+                            "Expected: 1",
+                            "Actual:   2"));
                     AssertBetweenTest(
                         lowerBound: 1,
                         value: 2,
