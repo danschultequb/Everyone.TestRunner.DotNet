@@ -11,9 +11,10 @@ namespace Everyone
         private Test(
             string name,
             TestGroup? parent,
+            string fullNameSeparator,
             CompareFunctions compareFunctions,
             AssertMessageFunctions assertMessageFunctions)
-            : base(name, parent)
+            : base(name, parent, fullNameSeparator)
         {
             PreCondition.AssertNotNullAndNotEmpty(name, nameof(name));
             PreCondition.AssertNotNull(compareFunctions, nameof(compareFunctions));
@@ -26,10 +27,11 @@ namespace Everyone
         public static Test Create(
             string name,
             TestGroup? parent,
+            string fullNameSeparator,
             CompareFunctions compareFunctions,
             AssertMessageFunctions messageFunctions)
         {
-            return new Test(name, parent, compareFunctions, messageFunctions);
+            return new Test(name, parent, fullNameSeparator, compareFunctions, messageFunctions);
         }
 
         private CompareFunctions CompareFunctions { get; }

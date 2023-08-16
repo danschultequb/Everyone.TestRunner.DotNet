@@ -5,9 +5,17 @@
     /// </summary>
     public class TestGroup : TestChild
     {
-        public TestGroup(string name, TestGroup? parent = null)
-            : base(name, parent)
+        protected TestGroup(string name, TestGroup? parent, string fullNameSeparator)
+            : base(name: name, parent: parent, fullNameSeparator: fullNameSeparator)
         {
+        }
+
+        public static TestGroup Create(string name, TestGroup? parent, string fullNameSeparator)
+        {
+            return new TestGroup(
+                name: name,
+                parent: parent,
+                fullNameSeparator: fullNameSeparator);
         }
     }
 }

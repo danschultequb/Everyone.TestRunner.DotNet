@@ -6,9 +6,9 @@ namespace Everyone
     {
         public static void Test(TestRunner runner)
         {
-            runner.TestGroup(typeof(TestFailure), () =>
+            runner.TestType<TestFailure>(() =>
             {
-                runner.TestGroup("Create(string,Exception)", () =>
+                runner.TestMethod("Create(string,Exception)", () =>
                 {
                     void CreateTest(string? fullName, Exception? exception, Exception? expectedException = null)
                     {

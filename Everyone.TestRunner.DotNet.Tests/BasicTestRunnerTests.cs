@@ -8,30 +8,21 @@ namespace Everyone
     {
         public static void Test(TestRunner runner)
         {
-            runner.TestGroup(typeof(BasicTestRunner), () =>
+            runner.TestType<BasicTestRunner>(() =>
             {
-                runner.Test("Create()", (Test test) =>
+                runner.TestMethod("Create()", (Test test) =>
                 {
                     BasicTestRunner btr = BasicTestRunner.Create();
                     test.AssertNotNull(btr);
                     test.AssertNull(btr.CurrentTestGroup);
                 });
 
-                runner.TestGroup("TestGroup(Type,Action)", () =>
+                runner.TestMethod("TestType<T>(Action)", () =>
                 {
-                    runner.Test($"with null {nameof(Type)}", (Test test) =>
-                    {
-                        TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentNullException("type"), () =>
-                        {
-                            ((TestRunner)btr).TestGroup((Type)null!, () => { });
-                        });
-                    });
-
                     runner.Test($"with null {nameof(Action)}", (Test test) =>
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(() => ((TestRunner)btr).TestGroup(typeof(string), (Action)null!),
+                        test.AssertThrows(() => btr.TestType<string>((Action)null!),
                             new PreConditionFailure(
                                 "Expression: testGroupAction",
                                 "Expected: not null",
@@ -42,7 +33,7 @@ namespace Everyone
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
                         int counter = 0;
-                        ((TestRunner)btr).TestGroup(typeof(string), () =>
+                        btr.TestType<string>(() =>
                         {
                             test.AssertNotNull(btr.CurrentTestGroup);
                             test.AssertEqual("System.String", btr.CurrentTestGroup.GetFullName());
@@ -53,23 +44,14 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("TestGroup(Type,Func<Task>)", () =>
+                runner.TestMethod("TestType<T>(Func<Task>)", () =>
                 {
-                    runner.Test($"with null {nameof(Type)}", (Test test) =>
-                    {
-                        TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentNullException("type"), () =>
-                        {
-                            ((TestRunner)btr).TestGroup((Type)null!, () => Task.CompletedTask);
-                        });
-                    });
-
                     runner.Test($"with null {nameof(Func<Task>)}", (Test test) =>
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(new ArgumentNullException("testGroupAction"), () =>
                         {
-                            ((TestRunner)btr).TestGroup(typeof(string), (Func<Task>)null!);
+                            btr.TestType<string>((Func<Task>)null!);
                         });
                     });
 
@@ -77,7 +59,7 @@ namespace Everyone
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
                         int counter = 0;
-                        ((TestRunner)btr).TestGroup(typeof(string), () =>
+                        btr.TestType<string>(() =>
                         {
                             test.AssertNotNull(btr.CurrentTestGroup);
                             test.AssertEqual("System.String", btr.CurrentTestGroup.GetFullName());
@@ -89,12 +71,12 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("TestGroup(string,Action)", () =>
+                runner.TestMethod("TestGroup(string,Action)", () =>
                 {
                     runner.Test($"with null name", (Test test) =>
                     {
                         TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(() => ((TestRunner)btr).TestGroup((string)null!, () => { }),
+                        test.AssertThrows(() => btr.TestGroup((string)null!, () => { }),
                             new PreConditionFailure(
                                 "Expression: name",
                                 "Expected: not null and not empty",
@@ -104,7 +86,7 @@ namespace Everyone
                     runner.Test($"with empty name", (Test test) =>
                     {
                         TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(() => ((TestRunner)btr).TestGroup("", () => { }),
+                        test.AssertThrows(() => btr.TestGroup("", () => { }),
                             new PreConditionFailure(
                                 "Expression: name",
                                 "Expected: not null and not empty",
@@ -114,7 +96,7 @@ namespace Everyone
                     runner.Test($"with null {nameof(Action)}", (Test test) =>
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(() => ((TestRunner)btr).TestGroup("hello", (Action)null!),
+                        test.AssertThrows(() => btr.TestGroup("hello", (Action)null!),
                             new PreConditionFailure(
                                 "Expression: testGroupAction",
                                 "Expected: not null",
@@ -125,7 +107,7 @@ namespace Everyone
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
                         int counter = 0;
-                        ((TestRunner)btr).TestGroup("hello", () =>
+                        btr.TestGroup("hello", () =>
                         {
                             test.AssertNotNull(btr.CurrentTestGroup);
                             test.AssertEqual("hello", btr.CurrentTestGroup.GetFullName());
@@ -136,14 +118,14 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("TestGroup(string,Func<Task>)", () =>
+                runner.TestMethod("TestGroup(string,Func<Task>)", () =>
                 {
                     runner.Test($"with null name", (Test test) =>
                     {
                         TestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(new ArgumentException("name cannot be null or empty.", "name"), () =>
                         {
-                            ((TestRunner)btr).TestGroup((string)null!, () => Task.CompletedTask);
+                            btr.TestGroup((string)null!, () => Task.CompletedTask);
                         });
                     });
 
@@ -152,7 +134,7 @@ namespace Everyone
                         TestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(new ArgumentException("name cannot be null or empty.", "name"), () =>
                         {
-                            ((TestRunner)btr).TestGroup("", () => Task.CompletedTask);
+                            btr.TestGroup("", () => Task.CompletedTask);
                         });
                     });
 
@@ -161,7 +143,7 @@ namespace Everyone
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(new ArgumentNullException("testGroupAction"), () =>
                         {
-                            ((TestRunner)btr).TestGroup("hello", (Func<Task>)null!);
+                            btr.TestGroup("hello", (Func<Task>)null!);
                         });
                     });
 
@@ -169,7 +151,7 @@ namespace Everyone
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
                         int counter = 0;
-                        ((TestRunner)btr).TestGroup("hello", () =>
+                        btr.TestGroup("hello", () =>
                         {
                             test.AssertNotNull(btr.CurrentTestGroup);
                             test.AssertEqual("hello", btr.CurrentTestGroup.GetFullName());
@@ -181,7 +163,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestGroupStarted(Action<TestGroup>)", () =>
+                runner.TestMethod("OnTestGroupStarted(Action<TestGroup>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -229,7 +211,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestGroupFailed(Action<TestGroup,Exception>)", () =>
+                runner.TestMethod("OnTestGroupFailed(Action<TestGroup,Exception>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -335,7 +317,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestGroupEnded(Action<TestGroup>)", () =>
+                runner.TestMethod("OnTestGroupEnded(Action<TestGroup>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -457,7 +439,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestStarted(Action<Test>)", () =>
+                runner.TestMethod("OnTestStarted(Action<Test>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -561,7 +543,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestFailed(Action<Test,Exception>)", () =>
+                runner.TestMethod("OnTestFailed(Action<Test,Exception>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -717,7 +699,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestPassed(Action<Test>)", () =>
+                runner.TestMethod("OnTestPassed(Action<Test>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -873,7 +855,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("OnTestEnded(Action<Test>)", () =>
+                runner.TestMethod("OnTestEnded(Action<Test>)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {

@@ -2,7 +2,7 @@
 
 namespace Everyone
 {
-    public class BasicTestRunner : TestRunner
+    public class BasicTestRunner : TestRunnerBase
     {
         private readonly CompareFunctions compareFunctions;
         private readonly ToStringFunctions toStringFunctions;
@@ -89,9 +89,37 @@ namespace Everyone
             return true;
         }
 
-        public virtual void Test(string name, Action<Test> testAction)
+        public override void TestGroup(string name, Action testGroupAction, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
         {
-            Test test = Everyone.Test.Create(name, this.CurrentTestGroup, this.compareFunctions, this.messageFunctions);
+            PreCondition.AssertNotNullAndNotEmpty(name, nameof(name));
+            PreCondition.AssertNotNull(testGroupAction, nameof(testGroupAction));
+            PreCondition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
+
+            this.CurrentTestGroup = Everyone.TestGroup.Create(
+                name: name,
+                parent: this.CurrentTestGroup,
+                fullNameSeparator: fullNameSeparator);
+            try
+            {
+                this.testGroupStarted.Invoke(this.CurrentTestGroup);
+
+                testGroupAction.Invoke();
+            }
+            catch (Exception e)
+            {
+                this.testGroupFailed.Invoke(this.CurrentTestGroup, e);
+            }
+            finally
+            {
+                this.testGroupEnded.Invoke(this.CurrentTestGroup);
+
+                this.CurrentTestGroup = this.CurrentTestGroup.Parent;
+            }
+        }
+
+        public override void Test(string name, Action<Test> testAction, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        {
+            Test test = Everyone.Test.Create(name, this.CurrentTestGroup, fullNameSeparator, this.compareFunctions, this.messageFunctions);
             if (this.ShouldInvokeTest(test))
             {
                 try
@@ -113,31 +141,7 @@ namespace Everyone
             }
         }
 
-        public virtual void TestGroup(string name, Action testGroupAction)
-        {
-            PreCondition.AssertNotNullAndNotEmpty(name, nameof(name));
-            PreCondition.AssertNotNull(testGroupAction, nameof(testGroupAction));
-
-            this.CurrentTestGroup = new TestGroup(name, this.CurrentTestGroup);
-            try
-            {
-                this.testGroupStarted.Invoke(this.CurrentTestGroup);
-
-                testGroupAction.Invoke();
-            }
-            catch (Exception e)
-            {
-                this.testGroupFailed.Invoke(this.CurrentTestGroup, e);
-            }
-            finally
-            {
-                this.testGroupEnded.Invoke(this.CurrentTestGroup);
-
-                this.CurrentTestGroup = this.CurrentTestGroup.Parent;
-            }
-        }
-
-        public string ToString<T>(T? value)
+        public override string ToString<T>(T? value) where T : default
         {
             return this.toStringFunctions.ToString(value);
         }

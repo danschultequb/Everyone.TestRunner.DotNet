@@ -1,35 +1,85 @@
-﻿namespace Everyone
+﻿using System;
+
+namespace Everyone
 {
     public static class TestGroupTests
     {
         public static void Test(TestRunner runner)
         {
-            runner.TestGroup(typeof(TestGroup), () =>
+            runner.TestType<TestGroup>(() =>
             {
-                runner.TestGroup("Constructor(string,TestGroup?)", () =>
+                runner.TestMethod("Create(string,TestGroup?,string)", () =>
                 {
-                    void ConstructorTest(string? name, TestGroup? parent)
+                    void ConstructorTest(string? name, TestGroup? parent, string? fullNameSeparator, Exception? expectedException = null)
                     {
-                        runner.Test($"with {name.EscapeAndQuote()} and {Strings.EscapeAndQuote(parent?.GetFullName())}", (Test test) =>
+                        runner.Test($"with {Language.AndList(new object?[] { name, parent, fullNameSeparator }.Map(runner.ToString))}", (Test test) =>
                         {
-                            TestGroup tg = new TestGroup(name!, parent);
-                            test.AssertEqual(name, tg.Name);
-                            test.AssertEqual(parent, tg.Parent);
+                            test.AssertThrows(expectedException, () =>
+                            {
+                                TestGroup tg = TestGroup.Create(name!, parent, fullNameSeparator!);
+                                test.AssertEqual(name, tg.Name);
+                                test.AssertEqual(parent, tg.Parent);
+                            });
                         });
                     };
 
-                    ConstructorTest(null, null);
-                    ConstructorTest("", null);
-                    ConstructorTest("abc", null);
-                    ConstructorTest(null, new TestGroup("b"));
-                    ConstructorTest("", new TestGroup("b"));
-                    ConstructorTest("a", new TestGroup("b"));
-                    ConstructorTest(null, new TestGroup("b", new TestGroup("c")));
-                    ConstructorTest("", new TestGroup("b", new TestGroup("c")));
-                    ConstructorTest("a", new TestGroup("b", new TestGroup("c")));
+                    ConstructorTest(
+                        name: null,
+                        parent: null,
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "",
+                        parent: null,
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "abc",
+                        parent: null,
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: null,
+                        parent: CreateTestGroup("b"),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "",
+                        parent: CreateTestGroup("b"),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "a",
+                        parent: CreateTestGroup("b"),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: null,
+                        parent: CreateTestGroup("b", CreateTestGroup("c")),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "",
+                        parent: CreateTestGroup("b", CreateTestGroup("c")),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
+                    ConstructorTest(
+                        name: "a",
+                        parent: CreateTestGroup("b", CreateTestGroup("c")),
+                        fullNameSeparator: null,
+                        expectedException: new PreConditionFailure(
+                            "blah"));
                 });
 
-                runner.TestGroup("GetFullName()", () =>
+                runner.TestMethod("GetFullName()", () =>
                 {
                     void GetFullNameTest(TestGroup tg, string expected)
                     {
@@ -39,11 +89,19 @@
                         });
                     }
 
-                    GetFullNameTest(new TestGroup("a"), "a");
-                    GetFullNameTest(new TestGroup("a", new TestGroup("b")), "b a");
-                    GetFullNameTest(new TestGroup("a", new TestGroup("b", new TestGroup("c"))), "c b a");
+                    GetFullNameTest(CreateTestGroup("a"), "a");
+                    GetFullNameTest(CreateTestGroup("a", CreateTestGroup("b")), "b a");
+                    GetFullNameTest(CreateTestGroup("a", CreateTestGroup("b", CreateTestGroup("c"))), "c b a");
                 });
             });
+        }
+
+        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        {
+            return TestGroup.Create(
+                name: name,
+                parent: parent,
+                fullNameSeparator: fullNameSeparator);
         }
     }
 }

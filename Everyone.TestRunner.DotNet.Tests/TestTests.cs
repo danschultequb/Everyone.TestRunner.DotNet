@@ -8,56 +8,61 @@ namespace Everyone
     {
         public static void Test(TestRunner runner)
         {
-            runner.TestGroup(typeof(Test), () =>
+            runner.TestType<Test>(() =>
             {
-                runner.TestGroup("Create(string,TestGroup?,CompareFunctions,AssertMessageFunctions)", () =>
+                runner.TestMethod("Create(string,TestGroup?,CompareFunctions,AssertMessageFunctions)", () =>
                 {
-                    void CreateErrorTest(string? name, TestGroup? parent, CompareFunctions? compareFunctions, AssertMessageFunctions? messageFunctions, Exception expected)
+                    void CreateErrorTest(string? name, TestGroup? parent, string? fullNameSeparator, CompareFunctions? compareFunctions, AssertMessageFunctions? messageFunctions, Exception expected)
                     {
-                        runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), compareFunctions, messageFunctions }.Select(runner.ToString))}", (Test test) =>
+                        runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), fullNameSeparator, compareFunctions, messageFunctions }.Select(runner.ToString))}", (Test test) =>
                         {
-                            test.AssertThrows(() => Everyone.Test.Create(name!, parent, compareFunctions!, messageFunctions!),
+                            test.AssertThrows(() => Everyone.Test.Create(name!, parent, fullNameSeparator!, compareFunctions!, messageFunctions!),
                                 expected);
                         });
                     };
 
-                    CreateErrorTest(null, null, null, null,
+                    CreateErrorTest(null, null, null, null, null,
                         new PreConditionFailure(
                             "Expression: name",
                             "Expected: not null and not empty",
                             "Actual:   null"));
-                    CreateErrorTest("", null, null, null,
+                    CreateErrorTest("", null, null, null, null,
                         new PreConditionFailure(
                             "Expression: name",
                             "Expected: not null and not empty",
                             "Actual:   \"\""));
-                    CreateErrorTest("abc", null, null, null,
+                    CreateErrorTest("abc", null, null, null, null,
+                        new PreConditionFailure(
+                            "Expression: fullNameSeparator",
+                            "Expected: not null",
+                            "Actual:       null"));
+                    CreateErrorTest("abc", null, "", null, null,
                         new PreConditionFailure(
                             "Expression: compareFunctions",
                             "Expected: not null",
                             "Actual:       null"));
-                    CreateErrorTest("abc", null, CompareFunctions.Create(), null,
+                    CreateErrorTest("abc", null, "", CompareFunctions.Create(), null,
                         new PreConditionFailure(
                             "Expression: assertMessageFunctions",
                             "Expected: not null",
                             "Actual:       null"));
 
-                    void ConstructorTest(string name, TestGroup? parent, CompareFunctions compareFunctions, AssertMessageFunctions messageFunctions)
+                    void ConstructorTest(string name, TestGroup? parent, string fullNameSeparator, CompareFunctions compareFunctions, AssertMessageFunctions messageFunctions)
                     {
-                        runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), compareFunctions, messageFunctions }.Select(runner.ToString))}", (Test test) =>
+                        runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), fullNameSeparator, compareFunctions, messageFunctions }.Select(runner.ToString))}", (Test test) =>
                         {
-                            Test t = Everyone.Test.Create(name, parent, compareFunctions, messageFunctions);
+                            Test t = Everyone.Test.Create(name, parent, fullNameSeparator, compareFunctions, messageFunctions);
                             test.AssertEqual(name, t.Name);
                             test.AssertEqual(parent, t.Parent);
                         });
                     };
 
-                    ConstructorTest("abc", null, CompareFunctions.Create(), AssertMessageFunctions.Create());
-                    ConstructorTest("a", new TestGroup("b"), CompareFunctions.Create(), AssertMessageFunctions.Create());
-                    ConstructorTest("a", new TestGroup("b", new TestGroup("c")), CompareFunctions.Create(), AssertMessageFunctions.Create());
+                    ConstructorTest("abc", null, " ", CompareFunctions.Create(), AssertMessageFunctions.Create());
+                    ConstructorTest("a", CreateTestGroup("b"), " ", CompareFunctions.Create(), AssertMessageFunctions.Create());
+                    ConstructorTest("a", CreateTestGroup("b", CreateTestGroup("c")), " ", CompareFunctions.Create(), AssertMessageFunctions.Create());
                 });
 
-                runner.TestGroup("GetFullName()", () =>
+                runner.TestMethod("GetFullName()", () =>
                 {
                     void GetFullNameTest(Test t, string expected)
                     {
@@ -68,11 +73,11 @@ namespace Everyone
                     }
 
                     GetFullNameTest(CreateTest("a"), "a");
-                    GetFullNameTest(CreateTest("a", new TestGroup("b")), "b a");
-                    GetFullNameTest(CreateTest("a", new TestGroup("b", new TestGroup("c"))), "c b a");
+                    GetFullNameTest(CreateTest("a", CreateTestGroup("b")), "b a");
+                    GetFullNameTest(CreateTest("a", CreateTestGroup("b", CreateTestGroup("c"))), "c b a");
                 });
 
-                runner.TestGroup("Fail(string)", () =>
+                runner.TestMethod("Fail(string)", () =>
                 {
                     void FailTest(string message)
                     {
@@ -89,7 +94,7 @@ namespace Everyone
                     FailTest("abc");
                 });
 
-                runner.TestGroup("AssertEqual<T,U>(T?,U?)", () =>
+                runner.TestMethod("AssertEqual<T,U>(T?,U?)", () =>
                 {
                     void AssertEqualErrorTest<T,U>(T? lhs, U? rhs, TestFailureException expected)
                     {
@@ -166,7 +171,7 @@ namespace Everyone
                     AssertEqualTest(new Exception("a"), new Exception("a"));
                 });
 
-                runner.TestGroup("AssertEqual(IEnumerable<T>,IEnumerable<T>)", () =>
+                runner.TestMethod("AssertEqual(IEnumerable<T>,IEnumerable<T>)", () =>
                 {
                     void AssertEqualErrorTest(IEnumerable<int> expected, IEnumerable<int> actual, TestFailureException expectedError)
                     {
@@ -204,7 +209,7 @@ namespace Everyone
                     AssertEqualTest(new[] { 1 }, new List<int>() { 1 });
                 });
 
-                runner.TestGroup("AssertSame(T,T)", () =>
+                runner.TestMethod("AssertSame(T,T)", () =>
                 {
                     void AssertSameErrorTest<T>(T lhs, T rhs, TestFailureException expected)
                     {
@@ -278,7 +283,7 @@ namespace Everyone
                     AssertSameTest("abc", "abc");
                 });
 
-                runner.TestGroup("AssertNotSame(T,T)", () =>
+                runner.TestMethod("AssertNotSame(T,T)", () =>
                 {
                     void AssertNotSameErrorTest<T>(T lhs, T rhs, TestFailureException expected)
                     {
@@ -322,7 +327,7 @@ namespace Everyone
                     AssertNotSameTest(new string("abc"), new string("abc"));
                 });
 
-                runner.TestGroup("AssertNotEqual(T,T)", () =>
+                runner.TestMethod("AssertNotEqual(T,T)", () =>
                 {
                     void AssertNotEqualErrorTest<T>(T lhs, T rhs, TestFailureException expected)
                     {
@@ -383,7 +388,7 @@ namespace Everyone
                     AssertNotEqualTest(false, true);
                 });
 
-                runner.TestGroup("AssertNull<T>(T?)", () =>
+                runner.TestMethod("AssertNull<T>(T?)", () =>
                 {
                     void AssertNullErrorTest(object value, TestFailureException expected)
                     {
@@ -405,7 +410,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("AssertNotNull<T>(T?)", () =>
+                runner.TestMethod("AssertNotNull<T>(T?)", () =>
                 {
                     runner.Test("with null", (Test test) =>
                     {
@@ -430,7 +435,7 @@ namespace Everyone
                     AssertNotNullTest("");
                 });
 
-                runner.TestGroup("AssertTrue(bool)", () =>
+                runner.TestMethod("AssertTrue(bool)", () =>
                 {
                     runner.Test("with true", (Test test) =>
                     {
@@ -446,7 +451,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("AssertFalse(bool)", () =>
+                runner.TestMethod("AssertFalse(bool)", () =>
                 {
                     runner.Test("with true", (Test test) =>
                     {
@@ -462,7 +467,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("Catch<T>(Action)", () =>
+                runner.TestMethod("Catch<T>(Action)", () =>
                 {
                     void CatchTest<T>(string testName, Action action, Exception? expected = null, Exception? unexpectedException = null) where T : Exception
                     {
@@ -501,7 +506,7 @@ namespace Everyone
                         unexpectedException: new InvalidOperationException("blah"));
                 });
 
-                runner.TestGroup("AssertThrows(Exception?,Action)", () =>
+                runner.TestMethod("AssertThrows(Exception?,Action)", () =>
                 {
                     runner.Test("with no exception thrown and null expected exception", (Test test) =>
                     {
@@ -538,7 +543,7 @@ namespace Everyone
                     });
                 });
 
-                runner.TestGroup("AssertGreaterThan<T,U>(T?,U?,string?)", () =>
+                runner.TestMethod("AssertGreaterThan<T,U>(T?,U?,string?)", () =>
                 {
                     void AssertGreaterThanTest<T, U>(T? value, U? lowerBound, string? expression = null, Exception? expectedException = null)
                     {
@@ -596,7 +601,7 @@ namespace Everyone
                             "Actual:                1"));
                 });
 
-                runner.TestGroup("AssertGreaterThanOrEqualTo<T,U>(T?,U?,string?)", () =>
+                runner.TestMethod("AssertGreaterThanOrEqualTo<T,U>(T?,U?,string?)", () =>
                 {
                     void AssertGreaterThanOrEqualToTest<T, U>(T? value, U? lowerBound, string? expression = null, Exception? expectedException = null)
                     {
@@ -647,7 +652,7 @@ namespace Everyone
                             "Actual:                            1"));
                 });
 
-                runner.TestGroup("AssertBetween<T,U,V>(T?,U?,V?,string?)", () =>
+                runner.TestMethod("AssertBetween<T,U,V>(T?,U?,V?,string?)", () =>
                 {
                     void AssertBetweenTest<T, U, V>(T? lowerBound, U? value, V? upperBound, string? message = null, Exception? expectedException = null)
                     {
@@ -779,9 +784,17 @@ namespace Everyone
             });
         }
 
-        private static Test CreateTest(string name, TestGroup? parent = null)
+        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
         {
-            return Everyone.Test.Create(name, parent, CompareFunctions.Create(), AssertMessageFunctions.Create());
+            return TestGroup.Create(
+                name: name,
+                parent: parent,
+                fullNameSeparator: fullNameSeparator);
+        }
+
+        private static Test CreateTest(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        {
+            return Everyone.Test.Create(name, parent, fullNameSeparator, CompareFunctions.Create(), AssertMessageFunctions.Create());
         }
     }
 }
