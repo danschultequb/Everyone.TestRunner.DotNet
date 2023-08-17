@@ -8,7 +8,7 @@ namespace Everyone
     /// </summary>
     public class Test : TestChild
     {
-        private Test(
+        protected Test(
             string name,
             TestGroup? parent,
             string fullNameSeparator,
@@ -31,7 +31,12 @@ namespace Everyone
             CompareFunctions compareFunctions,
             AssertMessageFunctions messageFunctions)
         {
-            return new Test(name, parent, fullNameSeparator, compareFunctions, messageFunctions);
+            return new Test(
+                name: name,
+                parent: parent,
+                fullNameSeparator: fullNameSeparator,
+                compareFunctions: compareFunctions,
+                assertMessageFunctions: messageFunctions);
         }
 
         private CompareFunctions CompareFunctions { get; }
