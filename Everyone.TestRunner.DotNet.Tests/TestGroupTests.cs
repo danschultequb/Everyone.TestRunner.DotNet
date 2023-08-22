@@ -96,12 +96,12 @@ namespace Everyone
             });
         }
 
-        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null)
         {
             return TestGroup.Create(
                 name: name,
                 parent: parent,
-                fullNameSeparator: fullNameSeparator);
+                fullNameSeparator: " ");
         }
     }
 }

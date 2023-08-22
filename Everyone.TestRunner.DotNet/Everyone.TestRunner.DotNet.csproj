@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>Everyone.TestRunner.DotNet</PackageId>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>dev009</VersionSuffix>
+    <VersionSuffix>dev013</VersionSuffix>
     <Title>Everyone.TestRunner.DotNet</Title>
     <Company>everyone</Company>
     <Authors>everyone</Authors>

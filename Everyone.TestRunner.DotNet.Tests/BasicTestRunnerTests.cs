@@ -49,10 +49,11 @@ namespace Everyone
                     runner.Test($"with null {nameof(Func<Task>)}", (Test test) =>
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentNullException("testGroupAction"), () =>
-                        {
-                            btr.TestType<string>((Func<Task>)null!);
-                        });
+                        test.AssertThrows(() => btr.TestType<string>((Func<Task>)null!),
+                            new PreConditionFailure(
+                                "Expression: testGroupAction",
+                                "Expected: not null",
+                                "Actual:       null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>
@@ -123,28 +124,31 @@ namespace Everyone
                     runner.Test($"with null name", (Test test) =>
                     {
                         TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentException("name cannot be null or empty.", "name"), () =>
-                        {
-                            btr.TestGroup((string)null!, () => Task.CompletedTask);
-                        });
+                    test.AssertThrows(() => btr.TestGroup((string)null!, () => Task.CompletedTask),
+                        new PreConditionFailure(
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     });
 
                     runner.Test($"with empty name", (Test test) =>
                     {
                         TestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentException("name cannot be null or empty.", "name"), () =>
-                        {
-                            btr.TestGroup("", () => Task.CompletedTask);
-                        });
+                        test.AssertThrows(() => btr.TestGroup("", () => Task.CompletedTask),
+                            new PreConditionFailure(
+                                "Expression: name",
+                                "Expected: not null and not empty",
+                                "Actual:   \"\""));
                     });
 
                     runner.Test($"with null {nameof(Func<Task>)}", (Test test) =>
                     {
                         BasicTestRunner btr = BasicTestRunner.Create();
-                        test.AssertThrows(new ArgumentNullException("testGroupAction"), () =>
-                        {
-                            btr.TestGroup("hello", (Func<Task>)null!);
-                        });
+                        test.AssertThrows(() => btr.TestGroup("hello", (Func<Task>)null!),
+                            new PreConditionFailure(
+                                "Expression: testGroupAction",
+                                "Expected: not null",
+                                "Actual:       null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>

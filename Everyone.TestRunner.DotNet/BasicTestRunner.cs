@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Everyone
 {
-    public class BasicTestRunner : TestRunnerBase
+    public class BasicTestRunner : TestRunnerBase<BasicTestRunner>
     {
+        private readonly IDictionary<string, string> fullNameSeparatorMap;
         private readonly CompareFunctions compareFunctions;
         private readonly ToStringFunctions toStringFunctions;
         private readonly AssertMessageFunctions messageFunctions;
@@ -22,6 +26,7 @@ namespace Everyone
             AssertMessageFunctions? messageFunctions,
             ToStringFunctions? toStringFunctions)
         {
+            this.fullNameSeparatorMap = new Dictionary<string, string>();
             this.compareFunctions = compareFunctions ?? CompareFunctions.Create();
             if (messageFunctions == null)
             {
@@ -89,11 +94,36 @@ namespace Everyone
             return true;
         }
 
-        public override void TestGroup(string name, Action testGroupAction, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        public override BasicTestRunner SetFullNameSeparator(string methodName, string fullNameSeparator)
         {
-            PreCondition.AssertNotNullAndNotEmpty(name, nameof(name));
-            PreCondition.AssertNotNull(testGroupAction, nameof(testGroupAction));
-            PreCondition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
+            PreCondition.AssertNotNullAndNotEmpty(methodName, nameof(methodName));
+            PreCondition.AssertNotNullAndNotEmpty(fullNameSeparator, nameof(fullNameSeparator));
+
+            this.fullNameSeparatorMap[methodName] = fullNameSeparator;
+
+            return this;
+        }
+
+        public override string GetFullNameSeparator([CallerMemberName] string methodName = "")
+        {
+            string? result;
+            if (!this.fullNameSeparatorMap.TryGetValue(methodName, out result) || result == null)
+            {
+                result = " ";
+            }
+            return result;
+        }
+
+        protected override void TestGroupInner(TestGroupParameters parameters)
+        {
+            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            PreCondition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
+            PreCondition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
+            PreCondition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
+
+            string name = parameters.GetName()!;
+            string fullNameSeparator = parameters.GetFullNameSeparator()!;
+            Action action = parameters.GetAction()!;
 
             this.CurrentTestGroup = Everyone.TestGroup.Create(
                 name: name,
@@ -103,7 +133,7 @@ namespace Everyone
             {
                 this.testGroupStarted.Invoke(this.CurrentTestGroup);
 
-                testGroupAction.Invoke();
+                action.Invoke();
             }
             catch (Exception e)
             {
@@ -117,8 +147,17 @@ namespace Everyone
             }
         }
 
-        public override void Test(string name, Action<Test> testAction, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        protected override void TestInner(TestParameters parameters)
         {
+            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            PreCondition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
+            PreCondition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
+            PreCondition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
+
+            string name = parameters.GetName()!;
+            string fullNameSeparator = parameters.GetFullNameSeparator()!;
+            Action<Test> action = parameters.GetAction()!;
+
             Test test = Everyone.Test.Create(name, this.CurrentTestGroup, fullNameSeparator, this.compareFunctions, this.messageFunctions);
             if (this.ShouldInvokeTest(test))
             {
@@ -126,7 +165,7 @@ namespace Everyone
                 {
                     this.testStarted.Invoke(test);
 
-                    testAction.Invoke(test);
+                    action.Invoke(test);
 
                     this.testPassed.Invoke(test);
                 }

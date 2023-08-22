@@ -784,17 +784,22 @@ namespace Everyone
             });
         }
 
-        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        private static TestGroup CreateTestGroup(string name, TestGroup? parent = null)
         {
             return TestGroup.Create(
                 name: name,
                 parent: parent,
-                fullNameSeparator: fullNameSeparator);
+                fullNameSeparator: " ");
         }
 
-        private static Test CreateTest(string name, TestGroup? parent = null, string fullNameSeparator = TestRunner.defaultFullNameSeparator)
+        private static Test CreateTest(string name, TestGroup? parent = null)
         {
-            return Everyone.Test.Create(name, parent, fullNameSeparator, CompareFunctions.Create(), AssertMessageFunctions.Create());
+            return Everyone.Test.Create(
+                name: name,
+                parent: parent,
+                fullNameSeparator: " ",
+                compareFunctions: CompareFunctions.Create(),
+                messageFunctions: AssertMessageFunctions.Create());
         }
     }
 }
