@@ -24,9 +24,9 @@ namespace Everyone
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(() => btr.TestType<string>((Action)null!),
                             new PreConditionFailure(
-                                "Expression: testGroupAction",
+                                "Expression: action",
                                 "Expected: not null",
-                                "Actual:       null"));
+                                "Actual:   null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>
@@ -51,9 +51,9 @@ namespace Everyone
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(() => btr.TestType<string>((Func<Task>)null!),
                             new PreConditionFailure(
-                                "Expression: testGroupAction",
+                                "Expression: asyncAction",
                                 "Expected: not null",
-                                "Actual:       null"));
+                                "Actual:   null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>
@@ -99,9 +99,9 @@ namespace Everyone
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(() => btr.TestGroup("hello", (Action)null!),
                             new PreConditionFailure(
-                                "Expression: testGroupAction",
+                                "Expression: action",
                                 "Expected: not null",
-                                "Actual:       null"));
+                                "Actual:   null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>
@@ -146,9 +146,9 @@ namespace Everyone
                         BasicTestRunner btr = BasicTestRunner.Create();
                         test.AssertThrows(() => btr.TestGroup("hello", (Func<Task>)null!),
                             new PreConditionFailure(
-                                "Expression: testGroupAction",
+                                "Expression: asyncAction",
                                 "Expected: not null",
-                                "Actual:       null"));
+                                "Actual:   null"));
                     });
 
                     runner.Test("with valid arguments", (Test test) =>

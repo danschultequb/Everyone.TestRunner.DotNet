@@ -12,7 +12,7 @@ namespace Everyone
                 {
                     void ConstructorTest(string? name, TestGroup? parent, string? fullNameSeparator, Exception? expectedException = null)
                     {
-                        runner.Test($"with {Language.AndList(new object?[] { name, parent, fullNameSeparator }.Map(runner.ToString))}", (Test test) =>
+                        runner.Test($"with {Language.AndList(new object?[] { name, parent?.GetFullName(), fullNameSeparator }.Map(runner.ToString))}", (Test test) =>
                         {
                             test.AssertThrows(expectedException, () =>
                             {
@@ -28,55 +28,73 @@ namespace Everyone
                         parent: null,
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     ConstructorTest(
                         name: "",
                         parent: null,
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   \"\""));
                     ConstructorTest(
                         name: "abc",
                         parent: null,
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: fullNameSeparator",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     ConstructorTest(
                         name: null,
                         parent: CreateTestGroup("b"),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     ConstructorTest(
                         name: "",
                         parent: CreateTestGroup("b"),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   \"\""));
                     ConstructorTest(
                         name: "a",
                         parent: CreateTestGroup("b"),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: fullNameSeparator",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     ConstructorTest(
                         name: null,
                         parent: CreateTestGroup("b", CreateTestGroup("c")),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                     ConstructorTest(
                         name: "",
                         parent: CreateTestGroup("b", CreateTestGroup("c")),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: name",
+                            "Expected: not null and not empty",
+                            "Actual:   \"\""));
                     ConstructorTest(
                         name: "a",
                         parent: CreateTestGroup("b", CreateTestGroup("c")),
                         fullNameSeparator: null,
                         expectedException: new PreConditionFailure(
-                            "blah"));
+                            "Expression: fullNameSeparator",
+                            "Expected: not null and not empty",
+                            "Actual:   null"));
                 });
 
                 runner.TestMethod("GetFullName()", () =>

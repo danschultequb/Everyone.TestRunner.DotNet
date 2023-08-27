@@ -22,30 +22,15 @@ namespace Everyone
                     };
 
                     CreateErrorTest(null, null, null, null, null,
-                        new PreConditionFailure(
-                            "Expression: name",
-                            "Expected: not null and not empty",
-                            "Actual:   null"));
+                        new ArgumentNullException("assertMessageFunctions"));
                     CreateErrorTest("", null, null, null, null,
-                        new PreConditionFailure(
-                            "Expression: name",
-                            "Expected: not null and not empty",
-                            "Actual:   \"\""));
+                        new ArgumentNullException("assertMessageFunctions"));
                     CreateErrorTest("abc", null, null, null, null,
-                        new PreConditionFailure(
-                            "Expression: fullNameSeparator",
-                            "Expected: not null",
-                            "Actual:       null"));
+                        new ArgumentNullException("assertMessageFunctions"));
                     CreateErrorTest("abc", null, "", null, null,
-                        new PreConditionFailure(
-                            "Expression: compareFunctions",
-                            "Expected: not null",
-                            "Actual:       null"));
+                        new ArgumentNullException("assertMessageFunctions"));
                     CreateErrorTest("abc", null, "", CompareFunctions.Create(), null,
-                        new PreConditionFailure(
-                            "Expression: assertMessageFunctions",
-                            "Expected: not null",
-                            "Actual:       null"));
+                        new ArgumentNullException("assertMessageFunctions"));
 
                     void ConstructorTest(string name, TestGroup? parent, string fullNameSeparator, CompareFunctions compareFunctions, AssertMessageFunctions messageFunctions)
                     {
@@ -227,49 +212,49 @@ namespace Everyone
                         true,
                         new TestFailureException(
                             "Expected: same as null",
-                            "Actual:           True"));
+                            "Actual:   True"));
                     AssertSameErrorTest<bool?>(
                         false,
                         null,
                         new TestFailureException(
                             "Expected: same as False",
-                            "Actual:           null"));
+                            "Actual:   null"));
                     AssertSameErrorTest(
                         false,
                         false,
                         new TestFailureException(
                             "Expected: same as False",
-                            "Actual:           False"));
+                            "Actual:   False"));
                     AssertSameErrorTest(
                         false,
                         true,
                         new TestFailureException(
                             "Expected: same as False",
-                            "Actual:           True"));
+                            "Actual:   True"));
                     AssertSameErrorTest(
                         1,
                         1,
                         new TestFailureException(
                             "Expected: same as 1",
-                            "Actual:           1"));
+                            "Actual:   1"));
                     AssertSameErrorTest(
                         1,
                         2,
                         new TestFailureException(
                             "Expected: same as 1",
-                            "Actual:           2"));
+                            "Actual:   2"));
                     AssertSameErrorTest(
                         "",
                         "oops",
                         new TestFailureException(
                             "Expected: same as \"\"",
-                            "Actual:           \"oops\""));
+                            "Actual:   \"oops\""));
                     AssertSameErrorTest(
                         new string("abc"),
                         new string("abc"),
                         new TestFailureException(
                             "Expected: same as \"abc\"",
-                            "Actual:           \"abc\""));
+                            "Actual:   \"abc\""));
 
                     void AssertSameTest<T>(T lhs, T rhs)
                     {
@@ -301,13 +286,13 @@ namespace Everyone
                         null,
                         new TestFailureException(
                             "Expected: not same as null",
-                            "Actual:               null"));
+                            "Actual:   null"));
                     AssertNotSameErrorTest(
                         "abc",
                         "abc",
                         new TestFailureException(
                             "Expected: not same as \"abc\"",
-                            "Actual:               \"abc\""));
+                            "Actual:   \"abc\""));
 
                     void AssertNotSameTest<T>(T lhs, T rhs)
                     {
@@ -345,31 +330,31 @@ namespace Everyone
                         null,
                         new TestFailureException(
                             "Expected: not null",
-                            "Actual:       null"));
+                            "Actual:   null"));
                     AssertNotEqualErrorTest(
                         false,
                         false,
                         new TestFailureException(
                             "Expected: not False",
-                            "Actual:       False"));
+                            "Actual:   False"));
                     AssertNotEqualErrorTest(
                         true,
                         true,
                         new TestFailureException(
                             "Expected: not True",
-                            "Actual:       True"));
+                            "Actual:   True"));
                     AssertNotEqualErrorTest(
                         5,
                         5,
                         new TestFailureException(
                             "Expected: not 5",
-                            "Actual:       5"));
+                            "Actual:   5"));
                     AssertNotEqualErrorTest(
                         "",
                         "",
                         new TestFailureException(
                             "Expected: not \"\"",
-                            "Actual:       \"\""));
+                            "Actual:   \"\""));
 
                     void AssertNotEqualTest<T>(T lhs, T rhs)
                     {
@@ -414,7 +399,7 @@ namespace Everyone
                 {
                     runner.Test("with null", (Test test) =>
                     {
-                        test.AssertThrows(new TestFailureException("Expected: not null", "Actual:       null"), () =>
+                        test.AssertThrows(new TestFailureException("Expected: not null", "Actual:   null"), () =>
                         {
                             test.AssertNotNull((object?)null);
                         });
@@ -550,17 +535,10 @@ namespace Everyone
                         runner.Test($"with {Language.AndList(new object?[] { value, lowerBound, expression }.Map(runner.ToString))}", (Test test) =>
                         {
                             Test t = CreateTest("fake-test");
-                            if (expectedException == null)
+                            test.AssertThrows(expectedException, () =>
                             {
                                 t.AssertGreaterThan(value, lowerBound, expression);
-                            }
-                            else
-                            {
-                                test.AssertThrows(expectedException, () =>
-                                {
-                                    t.AssertGreaterThan(value, lowerBound, expression);
-                                });
-                            }
+                            });
                         });
                     }
 
@@ -576,29 +554,29 @@ namespace Everyone
                         lowerBound: 1,
                         expectedException: new TestFailureException(
                             "Expected: greater than 1",
-                            "Actual:                1"));
+                            "Actual:   1"));
                     AssertGreaterThanTest(
                         value: 1,
                         lowerBound: 1,
                         expression: "hello",
                         expectedException: new TestFailureException(
-                            "Message: hello",
+                            "Expression: hello",
                             "Expected: greater than 1",
-                            "Actual:                1"));
+                            "Actual:   1"));
                     AssertGreaterThanTest(
                         value: 1,
                         lowerBound: 2,
                         expectedException: new TestFailureException(
                             "Expected: greater than 2",
-                            "Actual:                1"));
+                            "Actual:   1"));
                     AssertGreaterThanTest(
                         value: 1,
                         lowerBound: 2,
                         expression: "hello",
                         expectedException: new TestFailureException(
-                            "Message: hello",
+                            "Expression: hello",
                             "Expected: greater than 2",
-                            "Actual:                1"));
+                            "Actual:   1"));
                 });
 
                 runner.TestMethod("AssertGreaterThanOrEqualTo<T,U>(T?,U?,string?)", () =>
@@ -608,17 +586,10 @@ namespace Everyone
                         runner.Test($"with {Language.AndList(new object?[] { value, lowerBound, expression }.Map(runner.ToString))}", (Test test) =>
                         {
                             Test t = CreateTest("fake-test");
-                            if (expectedException == null)
+                            test.AssertThrows(expectedException, () =>
                             {
                                 t.AssertGreaterThanOrEqualTo(value, lowerBound, expression);
-                            }
-                            else
-                            {
-                                test.AssertThrows(expectedException, () =>
-                                {
-                                    t.AssertGreaterThanOrEqualTo(value, lowerBound, expression);
-                                });
-                            }
+                            });
                         });
                     }
 
@@ -641,15 +612,15 @@ namespace Everyone
                         lowerBound: 2,
                         expectedException: new TestFailureException(
                             "Expected: greater than or equal to 2",
-                            "Actual:                            1"));
+                            "Actual:   1"));
                     AssertGreaterThanOrEqualToTest(
                         value: 1,
                         lowerBound: 2,
                         expression: "hello",
                         expectedException: new TestFailureException(
-                            "Message: hello",
+                            "Expression: hello",
                             "Expected: greater than or equal to 2",
-                            "Actual:                            1"));
+                            "Actual:   1"));
                 });
 
                 runner.TestMethod("AssertBetween<T,U,V>(T?,U?,V?,string?)", () =>
@@ -703,7 +674,7 @@ namespace Everyone
                         upperBound: 3,
                         expectedException: new TestFailureException(
                             "Expected: between 1 and 3",
-                            "Actual:           0"));
+                            "Actual:   0"));
                     AssertBetweenTest(
                         lowerBound: 1,
                         value: 0,
@@ -712,7 +683,7 @@ namespace Everyone
                         expectedException: new TestFailureException(
                             "Message: hello",
                             "Expected: between 1 and 3",
-                            "Actual:           0"));
+                            "Actual:   0"));
 
                     AssertBetweenTest(
                         lowerBound: '1',
@@ -729,7 +700,7 @@ namespace Everyone
                         upperBound: '3',
                         expectedException: new TestFailureException(
                             "Expected: between '1' and '3'",
-                            "Actual:           '0'"));
+                            "Actual:   '0'"));
                     AssertBetweenTest(
                         lowerBound: '1',
                         value: '0',
@@ -738,7 +709,7 @@ namespace Everyone
                         expectedException: new TestFailureException(
                             "Message: hello",
                             "Expected: between '1' and '3'",
-                            "Actual:           '0'"));
+                            "Actual:   '0'"));
 
                     AssertBetweenTest(
                         lowerBound: "no compare function",
@@ -758,7 +729,7 @@ namespace Everyone
                         upperBound: 40,
                         expectedException: new TestFailureException(
                             "Expected: between \"no compare\" and 40",
-                            "Actual:           \"function\""));
+                            "Actual:   \"function\""));
                     AssertBetweenTest(
                         lowerBound: "no compare",
                         value: "function",
@@ -767,7 +738,7 @@ namespace Everyone
                         expectedException: new TestFailureException(
                             "Message: hello",
                             "Expected: between \"no compare\" and 40",
-                            "Actual:           \"function\""));
+                            "Actual:   \"function\""));
 
                     AssertBetweenTest(
                         lowerBound: "no compare",

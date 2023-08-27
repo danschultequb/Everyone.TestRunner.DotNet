@@ -48,7 +48,7 @@ namespace Everyone
                         expectedException: new PreConditionFailure(
                             "Expression: exception",
                             "Expected: not null",
-                            "Actual:       null"));
+                            "Actual:   null"));
                     CreateTest(
                         fullName: "a b c",
                         exception: new Exception("hello"));

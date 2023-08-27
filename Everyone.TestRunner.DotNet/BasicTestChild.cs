@@ -10,7 +10,7 @@
         protected BasicTestChild(string name, TestGroup? parent, string fullNameSeparator)
         {
             Pre.Condition.AssertNotNullAndNotEmpty(name, nameof(name));
-            Pre.Condition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
+            Pre.Condition.AssertNotNullAndNotEmpty(fullNameSeparator, nameof(fullNameSeparator));
 
             this.Name = name;
             this.Parent = parent;
