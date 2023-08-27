@@ -18,14 +18,14 @@ namespace Everyone
 
         public Action GetAction()
         {
-            PreCondition.AssertNotNull(this.action, nameof(this.action));
+            Pre.Condition.AssertNotNull(this.action, nameof(this.action));
 
             return this.action!;
         }
 
         public TestGroupParameters SetAction(Action action)
         {
-            PreCondition.AssertNotNull(action, nameof(action));
+            Pre.Condition.AssertNotNull(action, nameof(action));
 
             this.action = action;
 

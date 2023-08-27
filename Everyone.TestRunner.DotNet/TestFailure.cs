@@ -6,8 +6,8 @@ namespace Everyone
     {
         private TestFailure(string fullName, Exception exception)
         {
-            PreCondition.AssertNotNullAndNotEmpty(fullName, nameof(fullName));
-            PreCondition.AssertNotNull(exception, nameof(exception));
+            Pre.Condition.AssertNotNullAndNotEmpty(fullName, nameof(fullName));
+            Pre.Condition.AssertNotNull(exception, nameof(exception));
 
             this.FullName = fullName;
             this.Exception = exception;

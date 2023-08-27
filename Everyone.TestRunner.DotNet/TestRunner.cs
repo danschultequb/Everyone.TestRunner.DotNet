@@ -292,7 +292,7 @@ namespace Everyone
 
         public void TestMethod(TestGroupParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
 
             this.TestGroupInner(parameters
                 .SetFullNameSeparatorIfUnset(this.GetFullNameSeparator()));
@@ -316,7 +316,7 @@ namespace Everyone
 
         public void TestMethod(TestParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
 
             this.TestInner(parameters
                 .SetFullNameSeparatorIfUnset(this.GetFullNameSeparator()));
@@ -340,7 +340,7 @@ namespace Everyone
 
         public void TestType(TestGroupParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
 
             this.TestGroupInner(parameters
                 .SetFullNameSeparatorIfUnset(this.GetFullNameSeparator()));
@@ -396,7 +396,7 @@ namespace Everyone
 
         public void TestType(TestParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
 
             this.TestInner(parameters
                 .SetFullNameSeparatorIfUnset(this.GetFullNameSeparator()));
@@ -452,14 +452,14 @@ namespace Everyone
 
         public virtual Action ToAction(Func<Task> asyncAction)
         {
-            PreCondition.AssertNotNull(asyncAction, nameof(asyncAction));
+            Pre.Condition.AssertNotNull(asyncAction, nameof(asyncAction));
 
             return () => asyncAction.Invoke().Await();
         }
 
         public virtual Action<Test> ToAction(Func<Test, Task> asyncAction)
         {
-            PreCondition.AssertNotNull(asyncAction, nameof(asyncAction));
+            Pre.Condition.AssertNotNull(asyncAction, nameof(asyncAction));
 
             return (Test test) => asyncAction.Invoke(test).Await();
         }

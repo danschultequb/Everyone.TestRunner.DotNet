@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System;
+﻿using System;
 
 namespace Everyone
 {
@@ -23,7 +22,7 @@ namespace Everyone
 
         public TestParameters SetAction(Action<Test> action)
         {
-            PreCondition.AssertNotNull(action, nameof(action));
+            Pre.Condition.AssertNotNull(action, nameof(action));
 
             this.action = action;
 

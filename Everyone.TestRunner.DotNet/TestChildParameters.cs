@@ -13,14 +13,14 @@ namespace Everyone
 
         public string GetName()
         {
-            PreCondition.AssertNotNullAndNotEmpty(this.name, nameof(this.name));
+            Pre.Condition.AssertNotNullAndNotEmpty(this.name, nameof(this.name));
 
             return this.name!;
         }
         
         public TDerived SetName(string name)
         {
-            PreCondition.AssertNotNullAndNotEmpty(name, nameof(name));
+            Pre.Condition.AssertNotNullAndNotEmpty(name, nameof(name));
 
             this.name = name;
 
@@ -29,7 +29,7 @@ namespace Everyone
 
         public TDerived SetName(Type type)
         {
-            PreCondition.AssertNotNull(type, nameof(type));
+            Pre.Condition.AssertNotNull(type, nameof(type));
 
             return this.SetName(Types.GetFullName(type));
         }
@@ -41,14 +41,14 @@ namespace Everyone
 
         public string GetFullNameSeparator()
         {
-            PreCondition.AssertNotNullAndNotEmpty(this.fullNameSeparator, nameof(this.fullNameSeparator));
+            Pre.Condition.AssertNotNullAndNotEmpty(this.fullNameSeparator, nameof(this.fullNameSeparator));
 
             return this.fullNameSeparator!;
         }
 
         public TDerived SetFullNameSeparator(string fullNameSeparator)
         {
-            PreCondition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
+            Pre.Condition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
 
             this.fullNameSeparator = fullNameSeparator;
 
@@ -57,7 +57,7 @@ namespace Everyone
 
         public TDerived SetFullNameSeparatorIfUnset(string fullNameSeparator)
         {
-            PreCondition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
+            Pre.Condition.AssertNotNull(fullNameSeparator, nameof(fullNameSeparator));
 
             if (this.fullNameSeparator == null)
             {

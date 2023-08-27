@@ -96,8 +96,8 @@ namespace Everyone
 
         public override BasicTestRunner SetFullNameSeparator(string methodName, string fullNameSeparator)
         {
-            PreCondition.AssertNotNullAndNotEmpty(methodName, nameof(methodName));
-            PreCondition.AssertNotNullAndNotEmpty(fullNameSeparator, nameof(fullNameSeparator));
+            Pre.Condition.AssertNotNullAndNotEmpty(methodName, nameof(methodName));
+            Pre.Condition.AssertNotNullAndNotEmpty(fullNameSeparator, nameof(fullNameSeparator));
 
             this.fullNameSeparatorMap[methodName] = fullNameSeparator;
 
@@ -116,10 +116,10 @@ namespace Everyone
 
         protected override void TestGroupInner(TestGroupParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
-            PreCondition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
-            PreCondition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
-            PreCondition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
+            Pre.Condition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
+            Pre.Condition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
 
             string name = parameters.GetName()!;
             string fullNameSeparator = parameters.GetFullNameSeparator()!;
@@ -149,10 +149,10 @@ namespace Everyone
 
         protected override void TestInner(TestParameters parameters)
         {
-            PreCondition.AssertNotNull(parameters, nameof(parameters));
-            PreCondition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
-            PreCondition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
-            PreCondition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
+            Pre.Condition.AssertNotNull(parameters, nameof(parameters));
+            Pre.Condition.AssertNotNullAndNotEmpty(parameters.GetName(), "parameters.GetName()");
+            Pre.Condition.AssertNotNullAndNotEmpty(parameters.GetFullNameSeparator(), "parameters.GetFullNameSeparator()");
+            Pre.Condition.AssertNotNull(parameters.GetAction(), "parameters.GetAction()");
 
             string name = parameters.GetName()!;
             string fullNameSeparator = parameters.GetFullNameSeparator()!;
