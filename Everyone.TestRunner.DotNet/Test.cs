@@ -99,7 +99,17 @@ namespace Everyone
         public void AssertThrows(Exception? expected, Action action, AssertParameters? parameters)
         {
             Exception? actual = this.Catch<Exception>(action);
-            this.AssertEqual(expected, actual, parameters);
+            
+            Exception? unwrappedActual = actual;
+            if (expected != null)
+            {
+                unwrappedActual = Exceptions.UnwrapTo(expected.GetType(), actual) as Exception;
+            }
+            
+            if (!this.GetCompareFunctions(parameters).AreEqual(expected, unwrappedActual))
+            {
+                this.AssertEqual(expected, actual, parameters);
+            }
         }
 
         /// <summary>
