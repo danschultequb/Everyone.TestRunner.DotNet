@@ -581,39 +581,39 @@ namespace Everyone
                             () => { throw new AwaitException(new Exception("abc")); });
                     });
 
-                    runner.Test("with the wrong type of exception thrown wrapped in an AwaitErrorException", (Test test) =>
+                    runner.Test($"with the wrong type of exception thrown wrapped in an {nameof(AwaitException)}", (Test test) =>
                     {
                         test.AssertThrows(
                             new TestFailureException(
                                 "Expected: System.Exception: \"abc\"",
-                                "Actual:   Everyone.AwaitErrorException: System.ArgumentException: \"abc\""),
+                                "Actual:   Everyone.AwaitException: System.ArgumentException: \"abc\""),
                             () =>
                             {
                                 test.AssertThrows(
                                     new Exception("abc"),
-                                    () => { throw new AwaitErrorException(UncaughtExceptionError.Create(new ArgumentException("abc"))); });
+                                    () => { throw new AwaitException(new ArgumentException("abc")); });
                             });
                     });
 
-                    runner.Test("with the wrong exception message wrapped in an AwaitErrorException", (Test test) =>
+                    runner.Test($"with the wrong exception message wrapped in an {nameof(AwaitException)}", (Test test) =>
                     {
                         test.AssertThrows(
                             new TestFailureException(
                                 "Expected: System.Exception: \"abc\"",
-                                "Actual:   Everyone.AwaitErrorException: System.Exception: \"def\""),
+                                "Actual:   Everyone.AwaitException: System.Exception: \"def\""),
                             () =>
                             {
                                 test.AssertThrows(
                                     new Exception("abc"),
-                                    () => { throw new AwaitErrorException(UncaughtExceptionError.Create(new Exception("def"))); });
+                                    () => { throw new AwaitException(new Exception("def")); });
                             });
                     });
 
-                    runner.Test("with matching exception wrapped in an AwaitErrorException", (Test test) =>
+                    runner.Test($"with matching exception wrapped in an {nameof(AwaitException)}", (Test test) =>
                     {
                         test.AssertThrows(
                             new Exception("abc"),
-                            () => throw new AwaitErrorException(UncaughtExceptionError.Create(new Exception("abc"))));
+                            () => throw new AwaitException(new Exception("abc")));
                     });
                 });
 

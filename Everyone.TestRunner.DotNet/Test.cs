@@ -101,9 +101,9 @@ namespace Everyone
             Exception? actual = this.Catch<Exception>(action);
             
             Exception? unwrappedActual = actual;
-            if (expected != null)
+            if (unwrappedActual != null && expected != null)
             {
-                unwrappedActual = Exceptions.UnwrapTo(expected.GetType(), actual) as Exception;
+                unwrappedActual = Exceptions.UnwrapTo(unwrappedActual, expected.GetType());
             }
             
             if (!this.GetCompareFunctions(parameters).AreEqual(expected, unwrappedActual))
